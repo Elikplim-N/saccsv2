@@ -6,70 +6,96 @@
   <title>IoT Device Dashboard</title>
   <!-- Tailwind CSS CDN -->
   <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+  <!-- Custom Styles for smooth transitions and better UX -->
+  <style>
+    .card {
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+    .card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 10px 15px rgba(0,0,0,0.15);
+    }
+  </style>
 </head>
-<body class="bg-gray-100">
-  <div class="container mx-auto p-4">
-    <header class="mb-4">
-      <h1 class="text-3xl font-bold text-center">IoT Device Dashboard</h1>
-    </header>
+<body class="bg-gray-50">
+  <!-- Header -->
+  <header class="bg-gradient-to-r from-blue-600 to-blue-400 text-white py-6 shadow-md">
+    <div class="container mx-auto px-4">
+      <h1 class="text-4xl font-bold text-center">IoT Device Dashboard</h1>
+      <p class="text-center mt-2">Real-Time Monitoring & Control</p>
+    </div>
+  </header>
 
+  <main class="container mx-auto px-4 py-8">
     <!-- Device Status Section -->
-    <section id="deviceStatus" class="bg-white p-4 rounded shadow mb-4">
-      <h2 class="text-xl font-semibold mb-2">Device Status</h2>
-      <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
-        <div class="p-4 border rounded">
-          <h3 class="font-bold">Relay Lamp</h3>
-          <p id="relayLamp" class="text-lg">Loading...</p>
-        </div>
-        <div class="p-4 border rounded">
-          <h3 class="font-bold">Relay Socket</h3>
-          <p id="relaySocket" class="text-lg">Loading...</p>
-        </div>
-        <div class="p-4 border rounded">
-          <h3 class="font-bold">Buzzer</h3>
-          <p id="buzzer" class="text-lg">Loading...</p>
+    <section id="deviceStatus" class="mb-8">
+      <div class="bg-white rounded-lg shadow-lg p-6 card">
+        <h2 class="text-2xl font-semibold border-b pb-2 mb-4">Device Status</h2>
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-6">
+          <div class="border rounded-lg p-4 text-center">
+            <h3 class="font-bold text-xl mb-2">Relay Lamp</h3>
+            <p id="relayLamp" class="text-2xl font-medium text-gray-700">Loading...</p>
+          </div>
+          <div class="border rounded-lg p-4 text-center">
+            <h3 class="font-bold text-xl mb-2">Relay Socket</h3>
+            <p id="relaySocket" class="text-2xl font-medium text-gray-700">Loading...</p>
+          </div>
+          <div class="border rounded-lg p-4 text-center">
+            <h3 class="font-bold text-xl mb-2">Buzzer</h3>
+            <p id="buzzer" class="text-2xl font-medium text-gray-700">Loading...</p>
+          </div>
         </div>
       </div>
     </section>
 
     <!-- Access Logs Section -->
-    <section id="accessLogs" class="bg-white p-4 rounded shadow mb-4">
-      <h2 class="text-xl font-semibold mb-2">Access Logs</h2>
-      <ul id="logsList" class="list-disc ml-5">
-        <li>Loading logs...</li>
-      </ul>
+    <section id="accessLogs" class="mb-8">
+      <div class="bg-white rounded-lg shadow-lg p-6 card">
+        <h2 class="text-2xl font-semibold border-b pb-2 mb-4">Access Logs</h2>
+        <div class="max-h-80 overflow-y-auto">
+          <ul id="logsList" class="space-y-3">
+            <li class="text-gray-600">Loading logs...</li>
+          </ul>
+        </div>
+      </div>
     </section>
 
     <!-- Control Device Section -->
-    <section class="bg-white p-4 rounded shadow">
-      <h2 class="text-xl font-semibold mb-2">Control Device</h2>
-      <form id="controlForm" class="space-y-4">
-        <div>
-          <label class="inline-flex items-center">
-            <input type="checkbox" id="controlRelayLamp" class="form-checkbox">
-            <span class="ml-2">Relay Lamp</span>
-          </label>
-        </div>
-        <div>
-          <label class="inline-flex items-center">
-            <input type="checkbox" id="controlRelaySocket" class="form-checkbox">
-            <span class="ml-2">Relay Socket</span>
-          </label>
-        </div>
-        <div>
-          <label class="inline-flex items-center">
-            <input type="checkbox" id="controlBuzzer" class="form-checkbox">
-            <span class="ml-2">Buzzer</span>
-          </label>
-        </div>
-        <button type="submit" class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">
-          Send Control
-        </button>
-      </form>
+    <section id="controlDevice">
+      <div class="bg-white rounded-lg shadow-lg p-6 card">
+        <h2 class="text-2xl font-semibold border-b pb-2 mb-4">Control Device</h2>
+        <form id="controlForm" class="space-y-6">
+          <div class="flex items-center space-x-3">
+            <input type="checkbox" id="controlRelayLamp" class="h-5 w-5 text-blue-600 focus:ring-blue-500 border-gray-300 rounded">
+            <label for="controlRelayLamp" class="text-lg font-medium text-gray-700">Relay Lamp</label>
+          </div>
+          <div class="flex items-center space-x-3">
+            <input type="checkbox" id="controlRelaySocket" class="h-5 w-5 text-blue-600 focus:ring-blue-500 border-gray-300 rounded">
+            <label for="controlRelaySocket" class="text-lg font-medium text-gray-700">Relay Socket</label>
+          </div>
+          <div class="flex items-center space-x-3">
+            <input type="checkbox" id="controlBuzzer" class="h-5 w-5 text-blue-600 focus:ring-blue-500 border-gray-300 rounded">
+            <label for="controlBuzzer" class="text-lg font-medium text-gray-700">Buzzer</label>
+          </div>
+          <button type="submit" class="w-full py-3 bg-blue-600 text-white font-semibold rounded hover:bg-blue-700 transition-colors">
+            Send Control Command
+          </button>
+        </form>
+      </div>
     </section>
-  </div>
+  </main>
+
+  <!-- Footer -->
+  <footer class="bg-gray-200 py-4 mt-8">
+    <div class="container mx-auto text-center text-gray-600">
+      &copy; <span id="currentYear"></span> IoT Dashboard. All rights reserved.
+    </div>
+  </footer>
 
   <script>
+    // Insert current year in footer
+    document.getElementById('currentYear').textContent = new Date().getFullYear();
+
     // Replace these values with your actual Supabase endpoint and key
     const supabaseUrl = 'https://lhyxuuomjusjmkycuwuh.supabase.co';
     const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxoeXh1dW9tanVzam1reWN1d3VoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDEwODc0NjIsImV4cCI6MjA1NjY2MzQ2Mn0.d_Ax_9uf6_yrx6lpwFzptpyL3AfB_VPo-sXEgavje54';
@@ -113,10 +139,11 @@
           const logsList = document.getElementById('logsList');
           logsList.innerHTML = '';
           if (logs.length === 0) {
-            logsList.innerHTML = '<li>No logs available</li>';
+            logsList.innerHTML = '<li class="text-gray-600">No logs available</li>';
           } else {
             logs.forEach(log => {
               const listItem = document.createElement('li');
+              listItem.className = "p-2 bg-gray-100 rounded";
               listItem.innerText = `UID: ${log.uid} - Status: ${log.status} (${new Date(log.created_at).toLocaleString()})`;
               logsList.appendChild(listItem);
             });
