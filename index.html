@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>IoT Device Dashboard</title>
+  <!-- Tailwind CSS CDN -->
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+</head>
+<body class="bg-gray-100">
+  <div class="container mx-auto p-4">
+    <header class="mb-4">
+      <h1 class="text-3xl font-bold text-center">IoT Device Dashboard</h1>
+    </header>
+
+    <!-- Device Status Section -->
+    <section id="deviceStatus" class="bg-white p-4 rounded shadow mb-4">
+      <h2 class="text-xl font-semibold mb-2">Device Status</h2>
+      <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+        <div class="p-4 border rounded">
+          <h3 class="font-bold">Relay Lamp</h3>
+          <p id="relayLamp" class="text-lg">Loading...</p>
+        </div>
+        <div class="p-4 border rounded">
+          <h3 class="font-bold">Relay Socket</h3>
+          <p id="relaySocket" class="text-lg">Loading...</p>
+        </div>
+        <div class="p-4 border rounded">
+          <h3 class="font-bold">Buzzer</h3>
+          <p id="buzzer" class="text-lg">Loading...</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Access Logs Section -->
+    <section id="accessLogs" class="bg-white p-4 rounded shadow mb-4">
+      <h2 class="text-xl font-semibold mb-2">Access Logs</h2>
+      <ul id="logsList" class="list-disc ml-5">
+        <li>Loading logs...</li>
+      </ul>
+    </section>
+
+    <!-- Control Device Section -->
+    <section class="bg-white p-4 rounded shadow">
+      <h2 class="text-xl font-semibold mb-2">Control Device</h2>
+      <form id="controlForm" class="space-y-4">
+        <div>
+          <label class="inline-flex items-center">
+            <input type="checkbox" id="controlRelayLamp" class="form-checkbox">
+            <span class="ml-2">Relay Lamp</span>
+          </label>
+        </div>
+        <div>
+          <label class="inline-flex items-center">
+            <input type="checkbox" id="controlRelaySocket" class="form-checkbox">
+            <span class="ml-2">Relay Socket</span>
+          </label>
+        </div>
+        <div>
+          <label class="inline-flex items-center">
+            <input type="checkbox" id="controlBuzzer" class="form-checkbox">
+            <span class="ml-2">Buzzer</span>
+          </label>
+        </div>
+        <button type="submit" class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">
+          Send Control
+        </button>
+      </form>
+    </section>
+  </div>
+
+  <script>
+    // Replace these values with your actual Supabase endpoint and key
+    const supabaseUrl = 'https://lhyxuuomjusjmkycuwuh.supabase.co';
+    const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxoeXh1dW9tanVzam1reWN1d3VoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDEwODc0NjIsImV4cCI6MjA1NjY2MzQ2Mn0.d_Ax_9uf6_yrx6lpwFzptpyL3AfB_VPo-sXEgavje54';
+
+    // Fetch the latest device control status and update the dashboard.
+    async function fetchDeviceStatus() {
+      try {
+        const response = await fetch(supabaseUrl + '/rest/v1/device_control?order=created_at.desc&limit=1', {
+          headers: {
+            'apikey': supabaseKey,
+            'Authorization': 'Bearer ' + supabaseKey
+          }
+        });
+        if (response.ok) {
+          const data = await response.json();
+          if (data.length > 0) {
+            const status = data[0];
+            document.getElementById('relayLamp').innerText = status.relay_lamp ? 'ON' : 'OFF';
+            document.getElementById('relaySocket').innerText = status.relay_socket ? 'ON' : 'OFF';
+            document.getElementById('buzzer').innerText = status.buzzer ? 'ON' : 'OFF';
+          }
+        } else {
+          console.error('Failed to fetch device status');
+        }
+      } catch (error) {
+        console.error('Error fetching device status:', error);
+      }
+    }
+
+    // Fetch recent access logs and update the logs list.
+    async function fetchAccessLogs() {
+      try {
+        const response = await fetch(supabaseUrl + '/rest/v1/access_logs?order=created_at.desc&limit=10', {
+          headers: {
+            'apikey': supabaseKey,
+            'Authorization': 'Bearer ' + supabaseKey
+          }
+        });
+        if (response.ok) {
+          const logs = await response.json();
+          const logsList = document.getElementById('logsList');
+          logsList.innerHTML = '';
+          if (logs.length === 0) {
+            logsList.innerHTML = '<li>No logs available</li>';
+          } else {
+            logs.forEach(log => {
+              const listItem = document.createElement('li');
+              listItem.innerText = `UID: ${log.uid} - Status: ${log.status} (${new Date(log.created_at).toLocaleString()})`;
+              logsList.appendChild(listItem);
+            });
+          }
+        } else {
+          console.error('Failed to fetch access logs');
+        }
+      } catch (error) {
+        console.error('Error fetching access logs:', error);
+      }
+    }
+
+    // Send new device control update to the backend.
+    async function sendControlUpdate(event) {
+      event.preventDefault();
+      const relayLamp = document.getElementById('controlRelayLamp').checked;
+      const relaySocket = document.getElementById('controlRelaySocket').checked;
+      const buzzer = document.getElementById('controlBuzzer').checked;
+
+      const payload = {
+        relay_lamp: relayLamp,
+        relay_socket: relaySocket,
+        buzzer: buzzer
+      };
+
+      try {
+        const response = await fetch(supabaseUrl + '/rest/v1/device_control', {
+          method: 'POST',
+          headers: {
+            'apikey': supabaseKey,
+            'Authorization': 'Bearer ' + supabaseKey,
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(payload)
+        });
+        if (response.ok) {
+          alert('Control updated successfully.');
+          fetchDeviceStatus();
+        } else {
+          alert('Failed to update device control.');
+        }
+      } catch (error) {
+        console.error('Error sending control update:', error);
+        alert('Error sending control update.');
+      }
+    }
+
+    document.getElementById('controlForm').addEventListener('submit', sendControlUpdate);
+
+    // Initial fetch and periodic updates
+    fetchDeviceStatus();
+    fetchAccessLogs();
+    setInterval(fetchDeviceStatus, 10000); // refresh device status every 10 seconds
+    setInterval(fetchAccessLogs, 15000); // refresh access logs every 15 seconds
+  </script>
+</body>
+</html>
