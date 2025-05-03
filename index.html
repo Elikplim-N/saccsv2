@@ -113,8 +113,8 @@
           const data = await response.json();
           if (data.length > 0) {
             const status = data[0];
-            document.getElementById('relayLamp').innerText = status.relay_lamp ? 'ON' : 'OFF';
-            document.getElementById('relaySocket').innerText = status.relay_socket ? 'ON' : 'OFF';
+            document.getElementById('relayLamp').innerText = status.relay_lamp ? 'OFF' : 'ON';
+            document.getElementById('relaySocket').innerText = status.relay_socket ? 'OFF' : 'ON';
             document.getElementById('buzzer').innerText = status.buzzer ? 'ON' : 'OFF';
           }
         } else {
