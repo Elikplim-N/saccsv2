@@ -61,28 +61,72 @@
     </section>
 
     <!-- Control Device Section -->
-    <section id="controlDevice">
-      <div class="bg-white rounded-lg shadow-lg p-6 card">
-        <h2 class="text-2xl font-semibold border-b pb-2 mb-4">Control Device</h2>
-        <form id="controlForm" class="space-y-6">
-          <div class="flex items-center space-x-3">
-            <input type="checkbox" id="controlRelaySocket" class="h-5 w-5 text-blue-600 focus:ring-blue-500 border-gray-300 rounded">
-            <label for="controlRelayLamp" class="text-lg font-medium text-gray-700">Relay Lamp</label>
-          </div>
-          <div class="flex items-center space-x-3">
-            <input type="checkbox" id="controlRelayLamp" class="h-5 w-5 text-blue-600 focus:ring-blue-500 border-gray-300 rounded">
-            <label for="controlRelaySocket" class="text-lg font-medium text-gray-700">Relay Socket</label>
-          </div>
-          <div class="flex items-center space-x-3">
-            <input type="checkbox" id="controlBuzzer" class="h-5 w-5 text-blue-600 focus:ring-blue-500 border-gray-300 rounded">
-            <label for="controlBuzzer" class="text-lg font-medium text-gray-700">Buzzer</label>
-          </div>
-          <button type="submit" class="w-full py-3 bg-blue-600 text-white font-semibold rounded hover:bg-blue-700 transition-colors">
-            Send Control Command
-          </button>
-        </form>
-      </div>
-    </section>
+<section id="controlDevice">
+  <div class="bg-white rounded-lg shadow-lg p-6 card">
+    <h2 class="text-2xl font-semibold border-b pb-2 mb-4">Control Device</h2>
+    <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 text-center">
+      <button onclick="toggleDevice('relay_lamp')" class="w-full py-3 bg-blue-600 text-white font-semibold rounded hover:bg-blue-700 transition-colors">
+        Toggle Relay Lamp
+      </button>
+      <button onclick="toggleDevice('relay_socket')" class="w-full py-3 bg-blue-600 text-white font-semibold rounded hover:bg-blue-700 transition-colors">
+        Toggle Relay Socket
+      </button>
+      <button onclick="toggleDevice('buzzer')" class="w-full py-3 bg-blue-600 text-white font-semibold rounded hover:bg-blue-700 transition-colors">
+        Toggle Buzzer
+      </button>
+    </div>
+  </div>
+</section>
+
+<script>
+  // Device control toggle
+  async function toggleDevice(deviceKey) {
+    try {
+      const currentStatusRes = await fetch(supabaseUrl + '/rest/v1/device_control?order=created_at.desc&limit=1', {
+        headers: {
+          'apikey': supabaseKey,
+          'Authorization': 'Bearer ' + supabaseKey
+        }
+      });
+      const currentStatusData = await currentStatusRes.json();
+      let currentStatus = currentStatusData[0] || {
+        relay_lamp: false,
+        relay_socket: false,
+        buzzer: false
+      };
+
+      // Toggle the selected device's status
+      currentStatus[deviceKey] = !currentStatus[deviceKey];
+
+      const payload = {
+        relay_lamp: currentStatus.relay_lamp,
+        relay_socket: currentStatus.relay_socket,
+        buzzer: currentStatus.buzzer
+      };
+
+      const response = await fetch(supabaseUrl + '/rest/v1/device_control', {
+        method: 'POST',
+        headers: {
+          'apikey': supabaseKey,
+          'Authorization': 'Bearer ' + supabaseKey,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(payload)
+      });
+
+      if (response.ok) {
+        alert(`${deviceKey.replace('_', ' ').toUpperCase()} toggled successfully`);
+        fetchDeviceStatus();
+      } else {
+        alert('Failed to update device control.');
+      }
+    } catch (error) {
+      console.error('Error toggling device:', error);
+      alert('Error updating device.');
+    }
+  }
+</script>
+
   </main>
 
   <!-- Footer -->
@@ -155,43 +199,6 @@
         console.error('Error fetching access logs:', error);
       }
     }
-
-    // Send new device control update to the backend.
-    async function sendControlUpdate(event) {
-      event.preventDefault();
-      const relayLamp = document.getElementById('controlRelayLamp').checked;
-      const relaySocket = document.getElementById('controlRelaySocket').checked;
-      const buzzer = document.getElementById('controlBuzzer').checked;
-
-      const payload = {
-        relay_lamp: relayLamp,
-        relay_socket: relaySocket,
-        buzzer: buzzer
-      };
-
-      try {
-        const response = await fetch(supabaseUrl + '/rest/v1/device_control', {
-          method: 'POST',
-          headers: {
-            'apikey': supabaseKey,
-            'Authorization': 'Bearer ' + supabaseKey,
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify(payload)
-        });
-        if (response.ok) {
-          alert('Control updated successfully.');
-          fetchDeviceStatus();
-        } else {
-          alert('Failed to update device control.');
-        }
-      } catch (error) {
-        console.error('Error sending control update:', error);
-        alert('Error sending control update.');
-      }
-    }
-
-    document.getElementById('controlForm').addEventListener('submit', sendControlUpdate);
 
     // Initial fetch and periodic updates
     fetchDeviceStatus();
