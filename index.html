@@ -159,8 +159,8 @@
     // Send new device control update to the backend.
     async function sendControlUpdate(event) {
       event.preventDefault();
-      const relayLamp = document.getElementById('controlRelayLamp').unchecked;
-      const relaySocket = document.getElementById('controlRelaySocket').unchecked;
+      const relayLamp = document.getElementById('controlRelayLamp').checked;
+      const relaySocket = document.getElementById('controlRelaySocket').checked;
       const buzzer = document.getElementById('controlBuzzer').checked;
 
       const payload = {
