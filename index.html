@@ -1,28 +1,27 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>IoT Device Dashboard</title>
-  <!-- Tailwind CSS CDN -->
+  <!-- Tailwind CSS -->
   <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
-  <!-- Custom Styles for smooth transitions and better UX -->
   <style>
     .card {
       transition: transform 0.3s ease, box-shadow 0.3s ease;
     }
     .card:hover {
       transform: translateY(-5px);
-      box-shadow: 0 10px 15px rgba(0,0,0,0.15);
+      box-shadow: 0 10px 15px rgba(0, 0, 0, 0.15);
     }
   </style>
 </head>
 <body class="bg-gray-50">
   <!-- Header -->
   <header class="bg-gradient-to-r from-blue-600 to-blue-400 text-white py-6 shadow-md">
-    <div class="container mx-auto px-4">
-      <h1 class="text-4xl font-bold text-center">IoT Device Dashboard</h1>
-      <p class="text-center mt-2">Real-Time Monitoring & Control</p>
+    <div class="container mx-auto px-4 text-center">
+      <h1 class="text-4xl font-bold">IoT Device Dashboard</h1>
+      <p class="mt-2">Real-Time Monitoring & Control</p>
     </div>
   </header>
 
@@ -63,32 +62,32 @@
     <!-- Control Device Section -->
     <section id="controlDevice">
       <div class="bg-white rounded-lg shadow-lg p-6 card">
-      <h2 class="text-2xl font-semibold border-b pb-2 mb-4">Control Device</h2>
-      <form id="controlForm" class="space-y-6">
-        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
-        <div class="flex flex-col items-center">
-          <button type="button" id="controlRelayLamp" class="w-full py-3 bg-blue-600 text-white font-semibold rounded hover:bg-blue-700 transition-colors">
-          Toggle Relay Socket
+        <h2 class="text-2xl font-semibold border-b pb-2 mb-4">Control Device</h2>
+        <form id="controlForm" class="space-y-6">
+          <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+            <div class="flex flex-col items-center">
+              <button type="button" id="controlRelayLamp" class="w-full py-3 bg-blue-600 text-white font-semibold rounded hover:bg-blue-700 transition-colors">
+                Toggle Relay Socket
+              </button>
+              <span class="mt-2 text-sm text-gray-500">Control the relay socket</span>
+            </div>
+            <div class="flex flex-col items-center">
+              <button type="button" id="controlRelaySocket" class="w-full py-3 bg-green-600 text-white font-semibold rounded hover:bg-green-700 transition-colors">
+                Toggle Relay Lamp
+              </button>
+              <span class="mt-2 text-sm text-gray-500">Control the relay lamp</span>
+            </div>
+            <div class="flex flex-col items-center">
+              <button type="button" id="controlBuzzer" class="w-full py-3 bg-red-600 text-white font-semibold rounded hover:bg-red-700 transition-colors">
+                Toggle Buzzer
+              </button>
+              <span class="mt-2 text-sm text-gray-500">Control the buzzer</span>
+            </div>
+          </div>
+          <button type="submit" class="w-full py-3 bg-indigo-600 text-white font-semibold rounded hover:bg-indigo-700 transition-colors">
+            Send Control Command
           </button>
-          <span class="mt-2 text-sm text-gray-500">Control the relay socket</span>
-        </div>
-        <div class="flex flex-col items-center">
-          <button type="button" id="controlRelaySocket" class="w-full py-3 bg-green-600 text-white font-semibold rounded hover:bg-green-700 transition-colors">
-          Toggle Relay Lamp
-          </button>
-          <span class="mt-2 text-sm text-gray-500">Control the relay lamp</span>
-        </div>
-        <div class="flex flex-col items-center">
-          <button type="button" id="controlBuzzer" class="w-full py-3 bg-red-600 text-white font-semibold rounded hover:bg-red-700 transition-colors">
-          Toggle Buzzer
-          </button>
-          <span class="mt-2 text-sm text-gray-500">Control the buzzer</span>
-        </div>
-        </div>
-        <button type="submit" class="w-full py-3 bg-indigo-600 text-white font-semibold rounded hover:bg-indigo-700 transition-colors">
-        Send Control Command
-        </button>
-      </form>
+        </form>
       </div>
     </section>
   </main>
@@ -101,26 +100,22 @@
   </footer>
 
   <script>
-    // Insert current year in footer
     document.getElementById('currentYear').textContent = new Date().getFullYear();
 
-    // Replace these values with your actual Supabase endpoint and key
     const supabaseUrl = 'https://lhyxuuomjusjmkycuwuh.supabase.co';
-    const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxoeXh1dW9tanVzam1reWN1d3VoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDEwODc0NjIsImV4cCI6MjA1NjY2MzQ2Mn0.d_Ax_9uf6_yrx6lpwFzptpyL3AfB_VPo-sXEgavje54';
+    const supabaseKey = 'YOUR_SUPABASE_KEY';
 
-    // Fetch the latest device control status and update the dashboard.
     async function fetchDeviceStatus() {
       try {
-        const response = await fetch(supabaseUrl + '/rest/v1/device_control?order=created_at.desc&limit=1', {
+        const response = await fetch(`${supabaseUrl}/rest/v1/device_control?order=created_at.desc&limit=1`, {
           headers: {
             'apikey': supabaseKey,
-            'Authorization': 'Bearer ' + supabaseKey
+            'Authorization': `Bearer ${supabaseKey}`
           }
         });
         if (response.ok) {
-          const data = await response.json();
-          if (data.length > 0) {
-            const status = data[0];
+          const [status] = await response.json();
+          if (status) {
             document.getElementById('relaySocket').innerText = status.relay_lamp ? 'OFF' : 'ON';
             document.getElementById('relayLamp').innerText = status.relay_socket ? 'OFF' : 'ON';
             document.getElementById('buzzer').innerText = status.buzzer ? 'ON' : 'OFF';
@@ -133,29 +128,20 @@
       }
     }
 
-    // Fetch recent access logs and update the logs list.
     async function fetchAccessLogs() {
       try {
-        const response = await fetch(supabaseUrl + '/rest/v1/access_logs?order=created_at.desc&limit=10', {
+        const response = await fetch(`${supabaseUrl}/rest/v1/access_logs?order=created_at.desc&limit=10`, {
           headers: {
             'apikey': supabaseKey,
-            'Authorization': 'Bearer ' + supabaseKey
+            'Authorization': `Bearer ${supabaseKey}`
           }
         });
         if (response.ok) {
           const logs = await response.json();
           const logsList = document.getElementById('logsList');
-          logsList.innerHTML = '';
-          if (logs.length === 0) {
-            logsList.innerHTML = '<li class="text-gray-600">No logs available</li>';
-          } else {
-            logs.forEach(log => {
-              const listItem = document.createElement('li');
-              listItem.className = "p-2 bg-gray-100 rounded";
-              listItem.innerText = `UID: ${log.uid} - Status: ${log.status} (${new Date(log.created_at).toLocaleString()})`;
-              logsList.appendChild(listItem);
-            });
-          }
+          logsList.innerHTML = logs.length
+            ? logs.map(log => `<li class="p-2 bg-gray-100 rounded">UID: ${log.uid} - Status: ${log.status} (${new Date(log.created_at).toLocaleString()})</li>`).join('')
+            : '<li class="text-gray-600">No logs available</li>';
         } else {
           console.error('Failed to fetch access logs');
         }
@@ -164,25 +150,20 @@
       }
     }
 
-    // Send new device control update to the backend.
     async function sendControlUpdate(event) {
       event.preventDefault();
-      const relayLamp = document.getElementById('controlRelayLamp').checked;
-      const relaySocket = document.getElementById('controlRelaySocket').checked;
-      const buzzer = document.getElementById('controlBuzzer').checked;
-
       const payload = {
-        relay_lamp: relayLamp,
-        relay_socket: relaySocket,
-        buzzer: buzzer
+        relay_lamp: document.getElementById('controlRelayLamp').checked,
+        relay_socket: document.getElementById('controlRelaySocket').checked,
+        buzzer: document.getElementById('controlBuzzer').checked
       };
 
       try {
-        const response = await fetch(supabaseUrl + '/rest/v1/device_control', {
+        const response = await fetch(`${supabaseUrl}/rest/v1/device_control`, {
           method: 'POST',
           headers: {
             'apikey': supabaseKey,
-            'Authorization': 'Bearer ' + supabaseKey,
+            'Authorization': `Bearer ${supabaseKey}`,
             'Content-Type': 'application/json'
           },
           body: JSON.stringify(payload)
@@ -201,11 +182,10 @@
 
     document.getElementById('controlForm').addEventListener('submit', sendControlUpdate);
 
-    // Initial fetch and periodic updates
     fetchDeviceStatus();
     fetchAccessLogs();
-    setInterval(fetchDeviceStatus, 10000); // refresh device status every 10 seconds
-    setInterval(fetchAccessLogs, 15000); // refresh access logs every 15 seconds
+    setInterval(fetchDeviceStatus, 10000);
+    setInterval(fetchAccessLogs, 15000);
   </script>
 </body>
 </html>
